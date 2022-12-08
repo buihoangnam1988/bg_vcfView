@@ -33,6 +33,7 @@ library(reshape)  # For melt() function.
 library("pracma") # For lsqnonneg()
 library("ggrepel") # lined labels for protein inset frunction.
 
+options(shiny.maxRequestSize=1024*1024*1024)
 
 # Track change in Max/Min AF freq range.
 # We do this to avoid making the AF density plot reactive to these values.
