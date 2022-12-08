@@ -1519,147 +1519,102 @@ frange <- function(result, lower_frange = 0.45, upper_frange = 0.55)
 }
 
 ui <- shinyUI(
-  fluidPage(
-    
+  fluidPage(   
     tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "app.css")),
-    
-    # Beware!!!!, Rshiny bug..
-    # If we have a custom message handler in our JS source, it will not work
-    # if the JS file is sourced within a tags$script().
-    # As a workaround we source with includeScript() instead.    
-    # tags$head(tags$script(src = "app.js")),
     includeScript("www/app.js"),
-    
-    sidebarLayout(position = "right",
-                  
-                  sidebarPanel(
-                    HTML(paste0('<div class="InvisableAtStart">')),
-                    HTML(paste0('<div style="padding:0px; align: center; text-align: center;font-size:24px"><img style="width: 70%; margin-bottom:3px; margin-top:3px;" src="dhelix_logo_small.png"></div>')),
-                    # The 'PASS' button and filters list.
-                    HTML(paste0('<div align="center">')),
-                    uiOutput("listFilters"),
-                    
-                    HTML(paste0('<div class="control-label" style="font-size: 12px; align: center; padding-top: 2%;">Threshold filters:</div>')),
-                    
-                    htmlOutput("tumourNameTag"),
-                    
-                    HTML(paste0('<div id="tlodThresh_slider" class="InvisableAtStart" style="display:inline-block; padding-right: 12px; margin-top: 4px;">')),
-                    
-                    numericInput("tlodThresh", "TLOD:", value = 0, min = 0, max = 1000, width = "50px"),
-                    
-                    HTML(paste0('</div>')),
-                    
-                    HTML(paste0('<div id="depthThresh_slider" class="InvisableAtStart" style="display:inline-block; padding-right: 12px; margin-top: 4px;">')),
-                    numericInput("depthThresh", "Depth:", value = 0, min = 0, max = 1000, width = "50px"),
-                    HTML(paste0('</div>')),
-                    
-                    HTML(paste0('<div id="mmqThresh_div" class="InvisableAtStart" style="display:inline-block;">')),
-                    numericInput("mmqThresh", "MMQ Alt.:", value = 0, min = 0, max = 1000, width = "50px"),
-                    HTML(paste0('</div>')),
-                    
-                    htmlOutput("normalNameTag"),
-                    
-                    HTML(paste0('<div id="afCeiling_slider" class="InvisableAtStart" style="display:inline-block; padding-right: 30px; margin-top: 4px;">')),
-                    numericInput("afInNormal", "AF ceiling:", value = 0, min = 0, max = 1, step = 0.005, width = "60px"),
-                    HTML(paste0('</div>')),
-                    HTML(paste0('<div id="depthInNormThresh_slider" class="InvisableAtStart" style="display:inline-block;">')),
-                    numericInput("depthThreshInNormal", "Depth:", value = 0, min = 0, max = 1000, width = "60px"),
-                    HTML(paste0('</div>')),
-                    
-                    HTML(paste0('<div id="citation_div" class="InvisableAtStart">')),
-                    actionLink("createBibFile", "cite vcfView", style='padding:4px; font-size:80%'),
-                    HTML(paste0('</div>')),
-                    
-                    
-                    HTML(paste0('</div>')),
-                    width = 3
-                  ),
-                  
-                  
-                  
-                  mainPanel(   
-                    # Background Logo.
-                    HTML(paste0('<div style="width: 100% ; height: 100%; background-image: url(\'dhelix_logo.png\'); background-repeat: no-repeat; background-position: 50% 30%; background-size: 50%;">')),
-                    
-                    # The "TopOne" plot is a plot with a transparent background.
-                    # It is positioned on top of the VAF plot and displays content when the user
-                    # selects an allele frequency 'window' range with select and drag from the VAF plot.
-                    # We don't need to set width here, it's set by args to output$TopOne <- renderPlot(...)
-                    plotOutput("TopOne", dblclick = "topOnePlotDblclick", width = "100%", height = "7%"),
-                    
-                    # VAF plot.
-                    # We don't use a double click event here nay more so remove..
-                    #plotOutput("targetVcf", click = "targetVcfPlotDblclick", brush = "targetVcfPlotBrush", dblclick = "targetVcfPlotDblclick"),
-                    plotOutput("targetVcf", dblclick = "targetVcfPlotDblclick", brush = "targetVcfPlotBrush"),
-                    
-                    
-                    # A pre text area where the depth at a given VAF (specified by a user mouse click) is displayed.
-                    # Directly below if is displayed the 'Select VCF' button to select the VCF file in question.
-                    # For alignment purposes all page elements are arranged as part of a table from here on.
-                    HTML(paste0('<div id="selectDiv" align="center" class="outer" style="background-image:url(\'selectVcf_at_start.png\'); background-repeat: no-repeat; background-position: 55% 20%; background-size: 50%;">')),
-                    
-                    HTML(paste0(
-                      tags$div(id="info", 
-                               class="shiny-html-output",
-                               align="center",
-                               style="font-family:monospace !important; font-size:80%; padding: 8px; background-color:transparent; colour: #333333")), ""),
-                    
-                    HTML(
-                      paste0(
-                        '<div align="center">',
-                        '<div style="display:inline-block; padding-right: 10px; bottom: 15px">',
-                        tags$button(id="evReactiveButton", 
-                                    type="button", 
-                                    class="btn btn-default action-button shiny-bound-input",
-                                    style="border: 1px solid silver;padding:1px; font-size:95%;",
-                                    HTML('Select VCF')),
-                        '</div>',
-                        '<div style="display:inline-block; padding-right: 10px; bottom: 15px">',
-                        tags$button(id="writeSubsettedVcf", 
-                                    type="button", 
-                                    class="btn btn-default action-button InvisableAtStart",
-                                    style="border: 1px solid silver;padding:1px; font-size:95%",
-                                    HTML('Write VCF')),
-                        '</div>',
-                        '<div style="display:inline-block; padding-right: 86px; bottom: 15px">',
-                        tags$button(id="saveAsSvg", 
-                                    type="button", 
-                                    class="btn btn-default action-button InvisableAtStart",
-                                    style="border: 1px solid silver;padding:1px; font-size:95%",
-                                    HTML('Save high res. PNG')),
-                        '</div>')
-                    ),
-                    
-                    HTML("<div class='InvisableAtStart' style='display:inline-block; padding-right: 10px;'>"),
-                    numericInput("minF", "min freq", value = 0, min = 0, max = 1, step = 0.01, width = "80px"),
-                    HTML("</div>"),
-                    HTML("<div class='InvisableAtStart' style='display:inline-block; padding-left: 10px;'>"),
-                    numericInput("maxF", "max freq", value = 0, min = 0, max = 1, step = 0.01, width = "80px"),
-                    HTML("</div>"),
-                    HTML("<div class='InvisableAtStart' style='display:inline-block; padding-left: 10px;'>"),
-                    selectizeInput("geneList",
-                                   "select gene",
-                                   choices = c("Please load a VCF first"),
-                                   selected = NULL,
-                                   multiple = FALSE,
-                                   options = list(),
-                                   width = "120px"),                    
-                    HTML("</div>"),            
-                    HTML(paste0('<div class="InvisableAtStart" style="padding:2px" align="center">')),
-                    radioButtons("afWindow",
-                                 "Inset window function:",
-                                 rbInsetFns,
-                                 inline=TRUE),
-                    HTML(paste0('</div>')),
-                    HTML("</div></div>"),          
-                    # Close off div with background.          
-                    HTML(paste0('</div>')),
-                    width = 9
-                  )
+    titlePanel("vcfView"), 
+    sidebarLayout(      
+      sidebarPanel(
+        HTML(paste0('<div class="InvisableAtStart">')),
+          HTML(paste0('<div style="padding:0px; align: center; text-align: center;font-size:24px"><img style="width: 70%; margin-bottom:3px; margin-top:3px;" src="dhelix_logo_small.png"></div>')),
+          # The 'PASS' button and filters list.
+            HTML(paste0('<div align="center">')),
+            uiOutput("listFilters"),
+        
+            HTML(paste0('<div class="control-label" style="font-size: 12px; align: center; padding-top: 2%;">Threshold filters:</div>')),
+        
+            htmlOutput("tumourNameTag"),
+        
+            HTML(paste0('<div id="tlodThresh_slider" class="InvisableAtStart" style="display:inline-block; padding-right: 12px; margin-top: 4px;">')),
+              numericInput("tlodThresh", "TLOD:", value = 0, min = 0, max = 1000, width = "50px"),
+            HTML(paste0('</div>')),
+            
+            HTML(paste0('<div id="depthThresh_slider" class="InvisableAtStart" style="display:inline-block; padding-right: 12px; margin-top: 4px;">')),
+              numericInput("depthThresh", "Depth:", value = 0, min = 0, max = 1000, width = "50px"),
+            HTML(paste0('</div>')),
+        
+            HTML(paste0('<div id="mmqThresh_div" class="InvisableAtStart" style="display:inline-block;">')),
+              numericInput("mmqThresh", "MMQ Alt.:", value = 0, min = 0, max = 1000, width = "50px"),
+            HTML(paste0('</div>')),
+        
+            htmlOutput("normalNameTag"),
+        
+            HTML(paste0('<div id="afCeiling_slider" class="InvisableAtStart" style="display:inline-block; padding-right: 30px; margin-top: 4px;">')),
+              numericInput("afInNormal", "AF ceiling:", value = 0, min = 0, max = 1, step = 0.005, width = "60px"),
+            HTML(paste0('</div>')),
+
+            HTML(paste0('<div id="depthInNormThresh_slider" class="InvisableAtStart" style="display:inline-block;">')),
+              numericInput("depthThreshInNormal", "Depth:", value = 0, min = 0, max = 1000, width = "60px"),
+            HTML(paste0('</div>')),
+            
+            HTML(paste0('<div id="citation_div" class="InvisableAtStart">')),
+              actionLink("createBibFile", "cite vcfView", style='padding:4px; font-size:80%'),
+            HTML(paste0('</div>')),
+          HTML(paste0('</div>')),
+        HTML(paste0('</div>')),
+        width = 3
+      ),                
+      mainPanel(   
+        plotOutput("TopOne", dblclick = "topOnePlotDblclick", width = "100%", height = "7%"),
+        plotOutput("targetVcf", dblclick = "targetVcfPlotDblclick", brush = "targetVcfPlotBrush"),
+        tags$div(id="info", 
+          class="shiny-html-output",
+          align="center",
+          style="font-family:monospace !important; font-size:80%; padding: 8px; background-color:transparent; colour: #333333"),
+        fluidRow(
+          column(12, fileInput("evReactiveButton", "Choose VCF File", accept = ".vcf", width = "100%")),
+          column(3, 
+            class = "InvisableAtStart",
+            numericInput("minF", "Min freq", value = 0, min = 0, max = 1, step = 0.01)
+          ),
+          column(3,
+            class = "InvisableAtStart",
+            numericInput("maxF", "Max freq", value = 0, min = 0, max = 1, step = 0.01)
+          ),
+          column(3,
+            class = "InvisableAtStart",
+            selectizeInput("geneList",
+                        "Select Gene",
+                        choices = c("Please load a VCF first"),
+                        selected = NULL,
+                        multiple = FALSE,
+                        options = list())
+          ),
+          column(3, 
+            class = "InvisableAtStart",
+            column(12,
+              column(6, 
+                actionButton("writeSubsettedVcf", 'Download VCF', icon = icon('download'), class = "InvisableAtStart", width = "100%")
+              ), 
+              column(6, 
+                actionButton("saveAsSvg",         'Download PNG', icon = icon('download'), class = "InvisableAtStart", width = "100%")
+              )
+            )
+          ), 
+          column(12, 
+            class = "InvisableAtStart",
+            radioButtons("afWindow",
+                      "Inset window function:",
+                      rbInsetFns,
+                      inline=TRUE)
+          )
+        ),
+        width = 9
+      ), 
+      position = "right",
     )
   )
 )
-
 
 server <- shinyServer(function(input, output, session) {
   
@@ -1911,7 +1866,8 @@ server <- shinyServer(function(input, output, session) {
     maxDepthInBreaks <<- 0
     gc()
     
-    csvPath = file.choose()
+    file <- input$evReactiveButton
+    csvPath = file$datapath
     
     # TODO!!!! csvPath is a bit of a misnomer. Its the path to the VCF file. Update this variable name.
     if(is.null(csvPath))
