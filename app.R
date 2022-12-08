@@ -1567,7 +1567,7 @@ ui <- shinyUI(
       ),                
       mainPanel(   
         plotOutput("TopOne", dblclick = "topOnePlotDblclick", width = "100%", height = "7%"),
-        plotOutput("targetVcf", dblclick = "targetVcfPlotDblclick", brush = "targetVcfPlotBrush"),
+        plotOutput("targetVcf", dblclick = "targetVcfPlotDblclick", brush = "targetVcfPlotBrush", width = "100%", height = "600px"),
         tags$div(id="info", 
           class="shiny-html-output",
           align="center",
@@ -1576,24 +1576,24 @@ ui <- shinyUI(
           column(12, fileInput("evReactiveButton", "Choose VCF File", accept = ".vcf", width = "100%")),
           column(3, 
             class = "InvisableAtStart",
-            numericInput("minF", "Min freq", value = 0, min = 0, max = 1, step = 0.01)
+            numericInput("minF", "Min freq", value = 0, min = 0, max = 1, step = 0.01, width = "100%")
           ),
           column(3,
             class = "InvisableAtStart",
-            numericInput("maxF", "Max freq", value = 0, min = 0, max = 1, step = 0.01)
+            numericInput("maxF", "Max freq", value = 0, min = 0, max = 1, step = 0.01, width = "100%")
           ),
-          column(3,
+          column(3, 
             class = "InvisableAtStart",
             selectizeInput("geneList",
                         "Select Gene",
                         choices = c("Please load a VCF first"),
                         selected = NULL,
                         multiple = FALSE,
-                        options = list())
+                        options = list(), width = "100%")
           ),
-          column(3, 
+          column(3, style="padding-left: 0px; padding-right: 0px; padding-top: 20px;",
             class = "InvisableAtStart",
-            column(12,
+            column(12, style="padding-left: 0px; padding-right: 0px;",
               column(6, 
                 actionButton("writeSubsettedVcf", 'Download VCF', icon = icon('download'), class = "InvisableAtStart", width = "100%")
               ), 

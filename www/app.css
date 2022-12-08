@@ -17,7 +17,7 @@ body {
 
 #targetVcf {
 	margin-top: 5px;
-	overflow: scroll;
+	/*overflow: scroll;*/
 	border: 1px solid #999999;
 }
 
