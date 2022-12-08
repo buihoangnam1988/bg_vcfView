@@ -1573,41 +1573,25 @@ ui <- shinyUI(
           align="center",
           style="font-family:monospace !important; font-size:80%; padding: 8px; background-color:transparent; colour: #333333"),
         fluidRow(
-          column(12, fileInput("evReactiveButton", "Choose VCF File", accept = ".vcf", width = "100%")),
-          column(3, 
-            class = "InvisableAtStart",
-            numericInput("minF", "Min freq", value = 0, min = 0, max = 1, step = 0.01, width = "100%")
-          ),
-          column(3,
-            class = "InvisableAtStart",
-            numericInput("maxF", "Max freq", value = 0, min = 0, max = 1, step = 0.01, width = "100%")
-          ),
-          column(3, 
-            class = "InvisableAtStart",
-            selectizeInput("geneList",
-                        "Select Gene",
-                        choices = c("Please load a VCF first"),
-                        selected = NULL,
-                        multiple = FALSE,
-                        options = list(), width = "100%")
+          column(12, fileInput("evReactiveButton", "Choose VCF File", accept = ".vcf", width = "100%"))),
+        fluidRow(class = "InvisableAtStart",
+          column(3, numericInput("minF", "Min freq", value = 0, min = 0, max = 1, step = 0.01, width = "100%")),
+          column(3, numericInput("maxF", "Max freq", value = 0, min = 0, max = 1, step = 0.01, width = "100%")),
+          column(3, selectizeInput("geneList",
+            "Select Gene",
+            choices = c("Please load a VCF first"),
+            selected = NULL,
+            multiple = FALSE,
+            options = list(), width = "100%")
           ),
           column(3, style="padding-left: 0px; padding-right: 0px; padding-top: 20px;",
-            class = "InvisableAtStart",
             column(12, style="padding-left: 0px; padding-right: 0px;",
-              column(6, 
-                actionButton("writeSubsettedVcf", 'Download VCF', icon = icon('download'), class = "InvisableAtStart", width = "100%")
-              ), 
-              column(6, 
-                actionButton("saveAsSvg",         'Download PNG', icon = icon('download'), class = "InvisableAtStart", width = "100%")
-              )
-            )
-          ), 
-          column(12, 
-            class = "InvisableAtStart",
-            radioButtons("afWindow",
-                      "Inset window function:",
-                      rbInsetFns,
-                      inline=TRUE)
+              column(6, actionButton("writeSubsettedVcf", 'Download VCF', icon = icon('download'), class = "InvisableAtStart", width = "100%")), 
+              column(6, actionButton("saveAsSvg",         'Download PNG', icon = icon('download'), class = "InvisableAtStart", width = "100%")))), 
+          column(12, radioButtons("afWindow",
+            "Inset window function:",
+            rbInsetFns,
+            inline=TRUE)
           )
         ),
         width = 9
